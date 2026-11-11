@@ -166,4 +166,3 @@ export async function run(){
   await vscode.commands.executeCommand('codeSwarm.detach');
   console.log('CODE_SWARM_MANAGED_TESTS_PASSED');
 }
-
