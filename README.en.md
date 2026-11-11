@@ -4,9 +4,11 @@
 
 [中文文档](README.md) · [Download VSIX](https://github.com/luiop4/code-swarm/releases/latest) · [MIT License](LICENSE)
 
-![Read-only stage demonstration](docs/assets/demo.gif)
+![Native VS Code screen recording](docs/assets/demo.gif)
 
-This GIF records the built-in read-only stage with synthetic code and a plain background. It is not a recording of model token generation or the native editor overlay.
+Recorded directly from VS Code and its native Windows overlay, with a plain background and original-speed motion. The GIF shows read-only reconstruction with 50 concurrent virtual cursors; the full video also includes real, animation-driven editor input and edit feedback. A script supplies synthetic code; no live model is called.
+
+[Watch the high-quality MP4](https://github.com/luiop4/code-swarm/releases/download/v0.9.1/code-swarm-native-demo.mp4) · [Recording details](docs/DEMO.md)
 
 Code Swarm is a prototype that turns code changes into cursor tasks: selecting, typing, erasing, tracing, and dragging floating code cards. On Windows, a transparent, click-through native overlay can render directly above the real editor.
 
