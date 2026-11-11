@@ -1,0 +1,5 @@
+{
+  "agent": "Claude / manual import demo",
+  "label": "Move helper and validate greeting",
+  "afterText": "export function double(value: number): number {\n  return value * 2;\n}\n\nexport function greet(name: string): string {\n  const normalized = name.trim() || 'world';\n  return `Hello, ${normalized}!`;\n}\n"
+}

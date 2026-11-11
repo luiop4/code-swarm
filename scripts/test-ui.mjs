@@ -1,0 +1,42 @@
+import { chromium } from 'playwright';
+import assert from 'node:assert/strict';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { serve } from './preview-server.mjs';
+const {server,url}=await serve();
+const browser=await chromium.launch({channel:process.env.PLAYWRIGHT_CHANNEL||'msedge',headless:true});
+const errors=[];const page=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1});
+page.on('pageerror',e=>errors.push(e.message));
+page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+const diag=()=>page.evaluate(()=>window.swarmDiagnostics);
+await mkdir('test-results',{recursive:true});
+try{
+  await page.goto(url);assert.equal(await page.locator('#empty').isVisible(),true);
+  await page.locator('#start-demo').click();await page.waitForTimeout(2400);
+  let d=await diag();assert.equal(d.workers,32);assert.ok(d.active>=16,`active=${d.active}`);assert.equal(d.history,3);
+  await page.screenshot({path:'test-results/swarm-build.png',fullPage:true});
+  await page.locator('#play').click();const paused=(await diag()).time;await page.waitForTimeout(250);assert.equal((await diag()).time,paused);
+  await page.locator('#stop').click();assert.equal((await diag()).time,0);assert.equal((await diag()).running,false);
+  assert.equal((await diag()).visiblePointers,0,'stopped workers are fully hidden');assert.equal((await diag()).pointerScale,.5,'stage pointers are half-size');
+  await page.locator('#skip').click();d=await diag();assert.equal(d.time,d.duration);assert.equal(d.finished,d.tasks);
+  assert.equal(d.visiblePointers,0,'completed workers are fully hidden');
+  assert.equal(await page.locator('#snapshot').textContent(),d.after);
+  const options=await page.locator('#history option').evaluateAll(os=>os.map(o=>o.value));
+  await page.selectOption('#history',options[1]);await page.waitForTimeout(1750);
+  await page.screenshot({path:'test-results/swarm-move.png',fullPage:true});
+  await page.locator('#play').click();await page.locator('#follow').click();
+  await page.locator('#viewport').hover();await page.mouse.wheel(0,800);assert.ok((await diag()).scrollY>0);
+  // Code with HTML-like content must remain inert, including its copyable snapshot.
+  await page.evaluate(()=>window.postMessage({type:'state',mode:'live',cursorCount:32,history:[{id:'xss',label:'inert',file:'<img src=x onerror=alert(1)>',before:'',after:'<script>window.pwned=true</script>',tasks:[],attribution:'Unattributed',source:'observed',createdAt:0}]},'*'));
+  assert.equal(await page.locator('#snapshot').textContent(),'<script>window.pwned=true</script>');assert.equal(await page.evaluate(()=>window.pwned),undefined);
+  await page.setViewportSize({width:520,height:820});await page.screenshot({path:'test-results/swarm-narrow.png',fullPage:true});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'no horizontal overflow');
+  await page.locator('#demo').click();await page.selectOption('#speed','4');
+  await page.waitForFunction(()=>window.swarmDiagnostics?.label?.startsWith('03'),undefined,{timeout:20000});
+  await page.waitForFunction(()=>window.swarmDiagnostics?.running===false,undefined,{timeout:15000});
+  d=await diag();assert.equal(d.time,d.duration);assert.equal(await page.locator('#snapshot').textContent(),d.after);
+  await page.locator('#detach').click();assert.equal(await page.locator('#empty').isVisible(),true);
+  assert.deepEqual(errors,[]);
+  const reduced=await browser.newPage({reducedMotion:'reduce'});await reduced.goto(url+'/?demo');assert.equal(await reduced.evaluate(()=>window.swarmDiagnostics.running),false);await reduced.close();
+  await writeFile('test-results/ui-report.json',JSON.stringify({passed:true,workers:32,checks:['parallel jobs','pause','stop','skip','half-size pointers','idle workers hidden','exact final snapshot','move scene','scroll','inert code text','narrow layout','3-scene autoplay','detach','reduced motion'],browserErrors:errors},null,2));
+  console.log('UI checks passed; screenshots in test-results/.');
+}finally{await browser.close();server.close();}

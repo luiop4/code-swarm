@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="{{CSP}}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{STYLE}}">
+  <title>Code Swarm</title>
+</head>
+<body>
+  <header class="masthead">
+    <div class="brand"><span class="logo">⌁</span><div><h1>CODE<span>SWARM</span><sup>LAB / 01</sup></h1><p>让代码的每一次变化，都看得见。</p></div></div>
+    <div class="connection"><span class="dot"></span><span id="mode">本地演示 · 无需 API Key</span></div>
+  </header>
+  <nav class="actions" aria-label="场景与文件">
+    <button id="demo" class="primary">✦ 完整演示</button>
+    <button id="attach">⌁ 监听当前文件</button>
+    <button id="import">＋ 导入 AI 补丁</button>
+    <button id="apply" disabled>应用已预览补丁</button>
+    <button id="detach" class="quiet" title="停止监听并清空内存中的代码快照">清空 / 断开</button>
+    <span class="spacer"></span><span class="guard">◇ 只读动画舞台</span>
+  </nav>
+  <main>
+    <section class="theater" aria-label="代码回放">
+      <div class="filebar"><span class="fileicon">TS</span><span id="filename">agent-router.ts</span><span id="source" class="tag">DEMO</span><span class="spacer"></span><button id="follow" class="mini" aria-pressed="true">跟随视角 ON</button><button id="reveal" class="mini">打开源文件 ↗</button></div>
+      <div class="stage-caption"><span id="record-label">准备开始</span><span id="stage-label">READ-ONLY RECONSTRUCTION</span></div>
+      <div id="viewport" tabindex="0" role="img" aria-label="彩色虚拟鼠标协作重建代码；可以滚轮浏览或用方向键移动视角。">
+        <canvas id="stage"></canvas>
+        <div id="empty"><div class="empty-mark">⌁</div><h2>观看代码被协作建造</h2><p>从生成、框选到搬运，让鼠标群讲述代码变化。</p><button id="start-demo" class="primary">播放 3 幕演示 →</button></div>
+        <div class="stage-corner">VIRTUAL CURSORS / REAL SNAPSHOTS</div>
+      </div>
+      <div class="transport">
+        <div class="transport-buttons"><button id="play" aria-label="播放或暂停">Ⅱ</button><button id="restart" title="重播当前片段">↺</button><button id="stop" title="停止并返回片段起点">□</button><button id="skip" title="跳到当前片段的最终快照">⇥</button></div>
+        <input id="scrub" aria-label="回放进度" type="range" min="0" max="1000" value="0">
+        <span id="time">00:00 / 00:00</span>
+        <select id="speed" aria-label="动画速度"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+      </div>
+      <div class="historybar"><span>片段</span><select id="history" aria-label="选择回放片段"></select><span id="queue">0 等待</span></div>
+    </section>
+    <aside>
+      <div class="section-heading"><span>SWARM CONTROL</span><span class="tag green">LOCAL</span></div>
+      <div class="metric"><strong id="count">32</strong><div>虚拟鼠标<span>确定性调度 · 无真实多 Agent 调用</span></div></div>
+      <div id="agents" aria-label="虚拟鼠标任务分配"></div>
+      <div class="stats"><div><strong id="done">0</strong><span>已完成任务</span></div><div><strong id="total">0</strong><span>总任务</span></div><div><strong id="active">0</strong><span>执行中</span></div></div>
+      <div class="section-heading tasks-heading"><span>任务分配</span><span id="phase">READY</span></div>
+      <div id="tasks"><p class="muted">等待代码变化或演示开始。</p></div>
+      <div class="legend"><span class="insert">● 生成</span><span class="replace">● 修改</span><span class="move">● 搬运</span><span class="delete">● 删除</span></div>
+      <div class="safety-note"><span>◇</span><p>回放的是代码快照。鼠标不会控制你的输入焦点，也不会因播放而修改文件。</p></div>
+    </aside>
+  </main>
+  <footer><span id="notice" role="status" aria-live="polite">演示为程序生成的视觉任务；监听模式不推断 AI 身份。</span><span>CODE SWARM / PROTOTYPE 0.3</span></footer>
+  <details class="snapshot"><summary>查看当前片段的最终代码（可复制）</summary><pre id="snapshot"></pre></details>
+  <script nonce="{{NONCE}}" src="{{SCRIPT}}"></script>
+</body>
+</html>

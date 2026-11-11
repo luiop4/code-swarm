@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.vscode-test/
+test-results/
+*.vsix
+*.zip
+*.log
+__pycache__/
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+docs/swarm-build.png
+docs/swarm-move.png

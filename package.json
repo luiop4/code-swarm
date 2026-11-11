@@ -1,0 +1,256 @@
+{
+  "name": "code-swarm-prototype",
+  "displayName": "Code Swarm — 代码蜂群",
+  "description": "Cursor swarm visualization with opt-in animation-driven, version-checked input.",
+  "version": "0.9.1",
+  "publisher": "code-swarm-local",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "extensionKind": [
+    "ui"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "可只读回放；应用补丁与动画输入需要受信任的工作区。"
+    },
+    "virtualWorkspaces": false
+  },
+  "contributes": {
+    "languageModelTools": [
+      {
+        "name": "code-swarm-animate_edit",
+        "displayName": "Code Swarm · 动画写入当前文件",
+        "toolReferenceName": "swarm_animate_edit",
+        "canBeReferencedInPrompt": true,
+        "userDescription": "将 AI 生成的完整代码通过蜂群动画写入当前编辑器。",
+        "modelDescription": "Use this tool to apply code changes to the currently active local source file through Code Swarm's animated input. Call it BEFORE using ordinary edit or file-write tools for that change. Pass the complete final file content in afterText, not a diff. Do not perform another edit on the same file after this tool succeeds. The user will confirm the write; Code Swarm verifies the document version, keeps a local before-backup, animates each real editor edit, and leaves saving to the user. Requires a trusted workspace, a focused local file editor, and a visible VS Code window. If targetFile is given, it must match the currently active file.",
+        "inputSchema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "afterText"
+          ],
+          "properties": {
+            "afterText": {
+              "type": "string",
+              "description": "The complete final source text for the currently active file, with no unified diff."
+            },
+            "targetFile": {
+              "type": "string",
+              "description": "Optional relative path, absolute path, or basename used to verify the active editor target."
+            },
+            "summary": {
+              "type": "string",
+              "description": "Short explanation of the requested code change for the user confirmation prompt."
+            }
+          }
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "codeSwarm.open",
+        "title": "Code Swarm: 打开蜂群舞台"
+      },
+      {
+        "command": "codeSwarm.demo",
+        "title": "Code Swarm: 播放完整演示"
+      },
+      {
+        "command": "codeSwarm.attach",
+        "title": "Code Swarm: 监听当前代码文件"
+      },
+      {
+        "command": "codeSwarm.overlayStart",
+        "title": "Code Swarm: 开启原生覆盖（Windows）"
+      },
+      {
+        "command": "codeSwarm.overlayDemo",
+        "title": "Code Swarm: 在当前代码上演示（只读）"
+      },
+      {
+        "command": "codeSwarm.cardsDemo",
+        "title": "Code Swarm: 悬浮代码卡片重建（只读）"
+      },
+      {
+        "command": "codeSwarm.overlayReplay",
+        "title": "Code Swarm: 重播原生覆盖动画"
+      },
+      {
+        "command": "codeSwarm.overlayStatus",
+        "title": "Code Swarm: 查看覆盖状态"
+      },
+      {
+        "command": "codeSwarm.previewCurrentJson",
+        "title": "Code Swarm: 预览当前打开的补丁 JSON"
+      },
+      {
+        "command": "codeSwarm.detach",
+        "title": "Code Swarm: 停止监听并清空快照"
+      },
+      {
+        "command": "codeSwarm.importProposal",
+        "title": "Code Swarm: 导入 AI 补丁预览（JSON）"
+      },
+      {
+        "command": "codeSwarm.applyProposal",
+        "title": "Code Swarm: 应用已预览补丁"
+      },
+      {
+        "command": "codeSwarm.resumeFollow",
+        "title": "Code Swarm: 继续跟随最新代码"
+      },
+      {
+        "command": "codeSwarm.chooseInput",
+        "title": "Code Swarm: 选择代码输入来源"
+      },
+      {
+        "command": "codeSwarm.streamAi",
+        "title": "Code Swarm: 让 VS Code AI 流式写入当前文件"
+      },
+      {
+        "command": "codeSwarm.startStaging",
+        "title": "Code Swarm: 启动通用动画输入（复制暂存文件路径）"
+      },
+      {
+        "command": "codeSwarm.finishStaging",
+        "title": "Code Swarm: 结束通用动画输入"
+      },
+      {
+        "command": "codeSwarm.animatedScript",
+        "title": "Code Swarm: 用动画输入运行 Python 生成脚本"
+      },
+      {
+        "command": "codeSwarm.pauseAnimatedInput",
+        "title": "Code Swarm: 暂停动画输入"
+      },
+      {
+        "command": "codeSwarm.resumeAnimatedInput",
+        "title": "Code Swarm: 继续动画输入"
+      },
+      {
+        "command": "codeSwarm.stopAnimatedInput",
+        "title": "Code Swarm: 停止动画输入（保留已输入内容）"
+      },
+      {
+        "command": "codeSwarm.openInputBackup",
+        "title": "Code Swarm: 查看输入前备份"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "codeSwarm.chooseInput",
+          "when": "resourceScheme == file",
+          "group": "navigation@100"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Code Swarm",
+      "properties": {
+        "codeSwarm.animationStyle": {
+          "type": "string",
+          "enum": [
+            "hybrid",
+            "cards",
+            "cues"
+          ],
+          "default": "hybrid",
+          "description": "混合模式：流式输入光标、小修改框选、删除红色擦除、大段粘贴和移动使用悬浮代码卡。"
+        },
+        "codeSwarm.cardSpeed": {
+          "type": "number",
+          "default": 4,
+          "minimum": 0.5,
+          "maximum": 4,
+          "description": "悬浮卡片动画速度，默认快速搬运；数值越大，落位越快。"
+        },
+        "codeSwarm.presentation": {
+          "type": "string",
+          "enum": [
+            "native",
+            "stage"
+          ],
+          "default": "native",
+          "description": "Windows 默认在真实编辑器上显示动画；stage 使用并排回放舞台。"
+        },
+        "codeSwarm.pointerSize": {
+          "type": "number",
+          "default": 12,
+          "minimum": 6,
+          "maximum": 16,
+          "description": "原生覆盖指针大小。空闲指针始终隐藏。"
+        },
+        "codeSwarm.cursorCount": {
+          "type": "number",
+          "default": 32,
+          "minimum": 8,
+          "maximum": 50,
+          "description": "Number of virtual cursors in the read-only stage."
+        },
+        "codeSwarm.captureDelay": {
+          "type": "number",
+          "default": 80,
+          "minimum": 60,
+          "maximum": 1500,
+          "description": "流式变化的采样间隔（毫秒）。连续输入不会等待停止后才播放。"
+        },
+        "codeSwarm.followStreaming": {
+          "type": "boolean",
+          "default": true,
+          "description": "混合模式中自动滚动到新写入的代码；向上查看或手动选择时暂停，可运行“继续跟随最新代码”恢复。"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "check": "tsc --noEmit",
+    "test": "npm run build && node --test dist/core.test.cjs",
+    "test:ui": "npm run build && node scripts/test-ui.mjs",
+    "test:extension": "npm run build && node scripts/test-extension.mjs",
+    "test:webview": "npm run build && node scripts/test-webview.mjs",
+    "test:overlay": "npm run build && node scripts/test-overlay.mjs",
+    "preview": "npm run build && node scripts/preview.mjs",
+    "package": "vsce package --no-dependencies --allow-missing-repository --no-rewrite-relative-links --out code-swarm-0.9.1.vsix",
+    "vscode:prepublish": "npm run check && npm run build",
+    "test:managed": "npm run build && node scripts/test-managed.mjs"
+  },
+  "dependencies": {
+    "diff": "9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "1.100.0",
+    "@vscode/test-electron": "3.1.0",
+    "@vscode/vsce": "4.1.0",
+    "esbuild": "^0.25.0",
+    "playwright": "1.65.0",
+    "typescript": "^5.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/luiop4/code-swarm.git"
+  },
+  "homepage": "https://github.com/luiop4/code-swarm#readme",
+  "bugs": {
+    "url": "https://github.com/luiop4/code-swarm/issues"
+  },
+  "keywords": [
+    "swarm",
+    "animation",
+    "copilot",
+    "visualization",
+    "ai"
+  ]
+}

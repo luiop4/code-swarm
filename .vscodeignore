@@ -1,0 +1,17 @@
+.vscode/**
+src/**
+native/**
+tests/**
+scripts/**
+node_modules/**
+test-results/**
+.vscode-test/**
+*.zip
+*.vsix
+tsconfig.json
+package-lock.json
+.gitignore
+dist/*.map
+dist/*.test.cjs
+docs/swarm-build.png
+docs/swarm-move.png
