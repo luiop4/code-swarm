@@ -17,9 +17,9 @@
 
 ## 看看它如何工作
 
-<img src="docs/assets/demo.gif" alt="Code Swarm 实机录屏：Windows VS Code 原生覆盖、50 鼠标并行搬运与真实代码输入" width="100%">
+<img src="docs/assets/native-input-13-19.gif" alt="Code Swarm 实机录屏：Windows VS Code 原生覆盖与真实代码输入（13–19 秒）" width="100%">
 
-*直接录自 Windows 上实际运行的 VS Code 与原生覆盖层，纯色背景、原速动作。首页动图展示 50 只虚拟鼠标并行的只读卡片重建；完整视频还展示动画驱动的真实编辑器输入和删除替换。使用脚本供给的示例代码，未调用真实模型。*
+*直接录自 Windows 上实际运行的 VS Code 与原生覆盖层，纯色背景、原速动作。首页动图仅保留实机视频第 13–19 秒，展示动画驱动的真实编辑器输入。使用脚本供给的示例代码，未调用真实模型。*
 
 [▶ 观看高清实机视频（MP4）](https://github.com/luiop4/code-swarm/releases/download/v0.9.1/code-swarm-native-demo.mp4) · [录制说明](docs/DEMO.md)
 
